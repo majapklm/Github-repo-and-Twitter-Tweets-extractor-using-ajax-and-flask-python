@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<form action="" method="post" name="post">
+	<select name="select" id="1"><option value="Github">Github</option>
+	<option value="Twitter">Twitter</option></select><br>
+        <input id="input1" type="text" name="input" tabindex="1" required>
+        <p><input name="submit" type="submit"  value="submit">
+<input type="button" onclick="exefun()" value="Ajax Call"></input></p></form>
+<script>
+function exefun(){
+	document.getElementById("loader1").style.display="inline-block";
+	document.getElementById("para2").style.display="None";
+	$.post('/getdata', {
+        'text': document.getElementById("input1").value,
+        'source': document.getElementById("1").value
+    }).done(function success(datas){
+		document.getElementById("para1").innerHTML=datas[1];
+		document.getElementById("loader1").style.display="None";
+	}).fail(function error(){
+		document.getElementById("loader1").style.display="None";
+		alert("error");
+	   });
+	}
+</script>
+<img id="loader1" src="{{ url_for('static', filename='img/button.gif') }}"  alt="Search" width="150px" height="150px" style="display:None"/>
+<p id="para1"></p>
+<div id="para2" align="left">
+{%if datas%}
+<h2>{{source}}:</h2>
+<ol>
+        {%for data in datas%}
+	{%if source=='Twitter'%}
+                <li>{{data["text"]}}</li>
+	{%elif source=='Github'%}
+		<li>{{data["name"]}}<br><a href={{data["html_url"]}}>{{data["html_url"]}}</a></li>
+	{%endif%}
+        {%endfor%}
+</ol>
+</div>{%endif%}
+{% endblock %}
